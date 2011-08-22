@@ -8,10 +8,6 @@ minor_update(){
 	git push origin master;
 	fab-2.6 production minor_update;
 }
-restart()
-{
-    ./venv/bin/python manage.py stop
-}
 
 deploy(){
 	git push origin master;
@@ -24,6 +20,12 @@ start(){
 
 stop(){
     ./venv/bin/python manage.py stop
+}
+
+restart()
+{
+    ./venv/bin/python manage.py stop
+    ./venv/bin/python manage.py start
 }
 
 case $1 in

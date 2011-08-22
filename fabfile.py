@@ -187,28 +187,28 @@ def start_upgrade():
 def reload_webserver():
     "Reloading webservers"
     require('current', provided_by = [testing, production])
-    sudo('%(current)s/manage.sh restart' % env)
     sudo('/etc/init.d/monit force-reload')
-    sudo('%s restart' % env.spawner)
     sudo('/etc/init.d/nginx reload')
+    with cd(env.current):
+        sudo('%(current)s/manage.sh restart' % env)
 
 
 def restart_webserver():
     "Restarting webservers"
     require('current', provided_by = [testing, production])
-    sudo('%(current)s/manage.sh restart' % env)
     sudo('/etc/init.d/monit restart')
-    sudo('%s restart' % env.spawner)
     sudo('/etc/init.d/nginx restart')
+    with cd(env.current):
+        sudo('%(current)s/manage.sh restart' % env)
 
 
 def stop_webserver():
     "Stop nginx and apache"
     require('current', provided_by = [testing, production])
-    sudo('%(current)s/manage.sh stop' % env)
     sudo('/etc/init.d/monit stop')
-    sudo('%s stop' % env.spawner)
     sudo('/etc/init.d/nginx stop')
+    with cd(env.current):
+        sudo('%(current)s/manage.sh stop' % env)
 
 
 def create_nginx():
