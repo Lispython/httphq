@@ -41,12 +41,12 @@ Simple service for testing HTTP/HTTPS requests. All endpoint responses are JSON-
 - ### 3xx Redirection
  - [300](http://h.wrttn.me/status/300) — Multiple Choices
  - [301](http://h.wrttn.me/status/301) — Moved Permanently [ Will also return this extra header: Location: http://http.obout.ru ]
- - [302](http://h.wrttn.me/status/302) — Found [ Will also return this extra header: Location: http://http.obout.ru ]
- - [303](http://h.wrttn.me/status/303) — See Other [ Will also return this extra header: Location: http://http.obout.ru ]
+ - [302](http://h.wrttn.me/status/302) — Found [ Will also return this extra header: Location: http://h.wrttn.me ]
+ - [303](http://h.wrttn.me/status/303) — See Other [ Will also return this extra header: Location: http://h.wrttn.me ]
  - [304](http://h.wrttn.me/status/304) — Not Modified [ Won't return a response body ]
- - [305](http://h.wrttn.me/status/305) — Use Proxy [ Will also return this extra header: Location: http://http.obout.ru ]
+ - [305](http://h.wrttn.me/status/305) — Use Proxy [ Will also return this extra header: Location: http://h.wrttn.me ]
  - [306](http://h.wrttn.me/status/306) — (Unused)
- - [307](http://h.wrttn.me/status/307) — Temporary Redirect [ Will also return this extra header: Location: http://http.obout.ru ]
+ - [307](http://h.wrttn.me/status/307) — Temporary Redirect [ Will also return this extra header: Location: http://h.wrttn.me ]
 
 - ### 4xx Client Error
 
@@ -150,7 +150,7 @@ Simple service for testing HTTP/HTTPS requests. All endpoint responses are JSON-
 
 
 ## SEE ALSO
-[http://hurl.it/](http://hurl.it), [httpbin.org](http://httpbin.org), [http://postbin.org](http://postbin.org), [http://httpstat.us](http://httpstat.us))
+[http://hurl.it/](http://hurl.it), [httpbin.org](http://httpbin.org), [http://postbin.org](http://postbin.org), [http://httpstat.us](http://httpstat.us)
 
 ## THANKS
 To [Kenneth Reitz](http://kennethreitz.com/pages/open-projects.html)  who develop [httpbin.org](http://httpbin.org)
