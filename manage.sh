@@ -1,5 +1,5 @@
 #!/bin/bash
-source venv/bin/activate
+source ./venv/bin/activate
 manage(){
 	./venv/bin/python manage.py $@
 }
@@ -10,7 +10,7 @@ minor_update(){
 }
 restart()
 {
-	fab-2.6 production restart_webserver;
+    ./venv/bin/python manage.py stop
 }
 
 deploy(){

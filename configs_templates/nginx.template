@@ -2,10 +2,10 @@ upstream  backend_{{ project_name }}  {
     server   127.0.0.1:8889;
 }
 
-events {
-    worker_connections 1024;
-    use epoll;
-}
+#events {
+#    worker_connections 1024;
+#    use epoll;
+#}
 
 server {
   listen {{ server_ip }}:80;
@@ -43,7 +43,7 @@ server {
     proxy_redirect off;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Scheme $scheme;
-    proxy_pass http://backend_{{ project_name }};;
+    proxy_pass http://backend_{{ project_name }};
   }
 }
 
