@@ -1,17 +1,24 @@
 # -*- coding:  utf-8 -*-
 """
-Fabric's own fabfile.
+http.fabfile
+~~~~~~~~~~~~
+
+HTTP Request & Response service fabric commands file
+
+:copyright: (c) 2011 by Alexandr Sokolovskiy (alex@obout.ru).
+:license: BSD, see LICENSE for more details.
 """
 
-from __future__ import with_statement
 import os
+
+from __future__ import with_statement
+
 import yaml
 from fabric.api import *
-from fabric.contrib.project import rsync_project
-from fabric.contrib.files import upload_template, exists
-from fabric.operations import require, put
 from fabric.contrib.console import confirm
-from fabric.utils import abort, warn
+from fabric.contrib.files import upload_template, exists
+from fabric.operations import require
+from fabric.utils import warn
 
 
 def _rel(*parts):
@@ -215,7 +222,8 @@ def create_nginx():
     "Creating nginx config"
     require('project_name', 'templates', provided_by = [testing, production])
     print("Creating nginx conf: %s" % _rel(env.local_root, 'nginx.conf'))
-    upload_template('nginx.template', _rel(env.configs, 'nginx.conf'), env, use_jinja = True, template_dir = _rel(env.local_root, env.templates))
+    upload_template('nginx.template', _rel(env.configs, 'nginx.conf'),
+                    env, use_jinja = True, template_dir = _rel(env.local_root, env.templates))
 
 
 
@@ -225,7 +233,8 @@ def create_monit():
     require('local_root', 'current', 'templates', provided_by = [testing, production])
     print("Creating  %s" % env.monit_conf)
     print("Creating monit conf: %s" % _rel(env.configs, 'monit.conf'))
-    upload_template('monit.template', _rel(env.configs, 'monit.conf'), env, use_jinja = True, template_dir = _rel(env.local_root, env.templates))
+    upload_template('monit.template', _rel(env.configs, 'monit.conf'),
+                    env, use_jinja = True, template_dir = _rel(env.local_root, env.templates))
 
 
 def update_configs():

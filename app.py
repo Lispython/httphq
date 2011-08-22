@@ -1,5 +1,14 @@
 #!/usr/bin/env python
 # -*- coding:  utf-8 -*-
+"""
+http.app
+~~~~~~~~~
+
+Core of HTTP Request & Response service
+
+:copyright: (c) 2011 by Alexandr Sokolovskiy (alex@obout.ru).
+:license: BSD, see LICENSE for more details.
+"""
 
 import os
 import sys
@@ -20,6 +29,7 @@ define("port", default=8889, help="run on the given port", type=int)
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
+
 def rel(*args):
     return os.path.join(PROJECT_ROOT, *args)
 
@@ -27,6 +37,7 @@ STATUSES_WITHOUT_BODY = (204, 205, 304)
 STATUSES_WITH_LOCATION = (301, 302, 303, 305, 307)
 STATUSES_WITH_AUHT = (401, )
 STATUSES_WITH_PROXY_AUTH = (407, )
+
 
 def get_status_extdescription(status):
     if status in STATUSES_WITH_PROXY_AUTH:
@@ -42,6 +53,9 @@ def get_status_extdescription(status):
 
 
 class HTTPApplication(Application):
+    """Base application
+    """
+
     def __init__(self):
         self.dirty_handlers = [
             (r"/", HomeHandler),
@@ -55,9 +69,9 @@ class HTTPApplication(Application):
             (r"/user-agent", UserAgentHandler),
             (r"/headers", HeadersHandler),
             (r"/cookies", CookiesHandler, "Returns all user cookies"),
-            (r"/cookies/set/(?P<name>.+)/(?P<value>.+)", CookiesHandler, "Setup given name and value on client"),
-            (r"/status/(?P<status_code>\d{3})", StatusHandler)
-        ]
+            (r"/cookies/set/(?P<name>.+)/(?P<value>.+)", CookiesHandler,
+             "Setup given name and value on client"),
+            (r"/status/(?P<status_code>\d{3})", StatusHandler)]
 
         settings = dict(
             site_title=u"HTTP Request & Response service",
@@ -69,11 +83,12 @@ class HTTPApplication(Application):
         )
         tornado.web.Application.__init__(self, [(h[0], h[1]) for h in self.dirty_handlers], **settings)
 
+
 class CustomHandler(tornado.web.RequestHandler):
     """Custom handler with good methods
     """
 
-    def __init__(self,*args,**kwargs):
+    def __init__(self, *args, **kwargs):
         super(CustomHandler, self).__init__(*args, **kwargs)
         self.set_header("Server", "LightBeer/0.568")
 
@@ -86,13 +101,14 @@ class CustomHandler(tornado.web.RequestHandler):
 class HomeHandler(CustomHandler):
     """Show home page
     """
+
     def get(self):
         endpoints = []
         replace_map = (
             ("(?P<status_code>\d{3})", "{status_code: int}", str(choice(responses.keys()))),
             ("(?P<name>.+)", "{name: str}", "test_name"),
-            ("(?P<value>.+)", "{value: str}", "test_value")
-            )
+            ("(?P<value>.+)", "{value: str}", "test_value"))
+
         for point in self.application.dirty_handlers:
             default_url = point[0]
             api_format = point[0]
@@ -149,6 +165,7 @@ class StatusHandler(CustomHandler):
 class UserAgentHandler(CustomHandler):
     """Returns user agent
     """
+
     def get(self):
         output = {"user-agent": self.request.headers.get("User-Agent")}
         self.json_response(output)
@@ -157,6 +174,7 @@ class UserAgentHandler(CustomHandler):
 class IPHandler(CustomHandler):
     """Returns client IP and proxies
     """
+
     def get(self):
         output = {"ip": self.request.remote_ip}
         hs = ("X-Real-Ip", "X-Forwarded-For", )
@@ -169,6 +187,7 @@ class IPHandler(CustomHandler):
 class HeadersHandler(CustomHandler):
     """Returns sended headers
     """
+
     def get(self):
         output = {}
         for k, v in self.request.headers.items():
@@ -179,6 +198,7 @@ class HeadersHandler(CustomHandler):
 class CookiesHandler(CustomHandler):
     """Cookies handler
     """
+
     def get(self, name=None, value=None):
         if name and value:
             self.set_cookie(name, value)
@@ -206,7 +226,7 @@ class METHODHandler(CustomHandler):
             for k, v in self.request.files.items():
                 data['files'][k] = [dict(filename=x['filename'],
                                          content_type=x['content_type'],
-                                         body=x['body'] if len(x['body'])<500 else x['body'][: 500])
+                                         body=x['body'] if len(x['body']) < 500 else x['body'][:500])
                                     for x in v]
         return data
 
@@ -214,6 +234,7 @@ class METHODHandler(CustomHandler):
 class GETHandler(METHODHandler):
     """GET method
     """
+
     def get(self):
         self.json_response(self.get_data())
 
@@ -221,6 +242,7 @@ class GETHandler(METHODHandler):
 class POSTHandler(METHODHandler):
     """POST method
     """
+
     def post(self):
         self.set_status(201)
         self.json_response(self.get_data())
@@ -229,6 +251,7 @@ class POSTHandler(METHODHandler):
 class DELETEHandler(METHODHandler):
     """DELETE method
     """
+
     def delete(self):
         self.json_response(self.get_data())
 
@@ -236,6 +259,7 @@ class DELETEHandler(METHODHandler):
 class PUTHandler(METHODHandler):
     """PUT method
     """
+
     def put(self):
         self.json_response(self.get_data())
 
@@ -243,6 +267,7 @@ class PUTHandler(METHODHandler):
 class HEADHandler(METHODHandler):
     """HEAD method
     """
+
     def head(self):
         self.json_response(self.get_data())
 
@@ -250,6 +275,7 @@ class HEADHandler(METHODHandler):
 class OPTIONSHandler(METHODHandler):
     """OPTIONS method
     """
+
     def options(self):
         self.json_response(self.get_data())
 
@@ -264,6 +290,7 @@ class Middleware(object):
 
 
 application = HTTPApplication()
+
 
 def main():
     tornado.options.parse_command_line()
@@ -280,6 +307,7 @@ def production():
     tornado.options.parse_command_line()
 
     class HTTPDaemon(Daemon):
+
         def run(self):
             http_server = httpserver.HTTPServer(application)
             http_server.listen(options.port)
@@ -309,5 +337,3 @@ def production():
 
 if __name__ == "__main__":
     main()
-
-
