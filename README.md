@@ -150,7 +150,7 @@ Simple service for testing HTTP/HTTPS requests. All endpoint responses are JSON-
 
 
 ## SEE ALSO
-[http://hurl.it/](http://hurl.it), [httpbin.org](http://httpbin.org), [http://postbin.org](http://postbin.org), [http://httpstat.us](http://httpstat.us)
+[http://hurl.it/](http://hurl.it), [httpbin.org](http://httpbin.org), [http://postbin.org](http://postbin.org), [ifconfig.me](http://ifconfig.me/), [http://httpstat.us](http://httpstat.us)
 
 ## THANKS
 To [Kenneth Reitz](http://kennethreitz.com/pages/open-projects.html)  who develop [httpbin.org](http://httpbin.org)
