@@ -21,8 +21,7 @@ from fabric.operations import require
 from fabric.utils import warn
 
 
-def _rel(*parts):
-    return os.path.join(*parts)
+_rel = os.path.join
 
 
 def _auto_params(b):
