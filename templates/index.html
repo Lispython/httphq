@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<title>{{ handler.settings['site_title'] }}</title>
+	<meta name="description" content="{{ handler.settings['site_title'] }}" />
+	<style type="text/css" media="all">
+	  p kbd:before {content: "[root@googleserver~]$\00A0\00A0";color: #555;}
+      pre, code {margin: .5em 0;}
+      pre {border: 2px solid #cbd1bd;}
+      pre, code, tt {font-size: 14px;font-family: Courier, "monospace";line-height: 1.5;background-color: #F5F5EA;color: #333; overflow: auto;  padding: 5px;}
+	  .status .extdescription {color:#9a9199;}
+	</style>
+  </head>
+  <body>
+	<!-- counters -->
+	<!-- Yandex.Metrika counter --><script type="text/javascript">var yaParams = {/*Здесь параметры визита*/};</script><div style="display:none;"><script type="text/javascript">(function(w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter9499702 = new Ya.Metrika({id:9499702, enableAll: true, trackHash:true,params:window.yaParams||{ }}); } catch(e) { } }); })(window, "yandex_metrika_callbacks");</script></div><script src="//mc.yandex.ru/metrika/watch.js" type="text/javascript" defer="defer"></script><noscript><div><img src="//mc.yandex.ru/watch/9499702" style="position:absolute; left:-9999px;" alt="" /></div></noscript><!-- /Yandex.Metrika counter -->
+	<!-- Google counter --><script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17631873-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+    <!-- / counters -->
+
+	<h1>{{ handler.settings['site_title'] }}</h1>
+	<p>Simple service for testing HTTP/HTTPS requests. All endpoint responses are JSON-encoded exclude <a href="/status/200">/status/{status_code: int}</a>. It's useful for testing how your own scripts deal with varying responses and requests.</p>
+	<h2>AUTHOR</h2>
+	<p>
+	  <a href="http://obout.ru">Lispython</a>
+	</p>
+	<h2>ENDPOINTS</h2>
+	<ul class="endpoints">
+	  {% for endpoint in endpoints %}
+	  <li class="endpoint">
+		<a href="{{ endpoint['default_url'] }}">{{ endpoint['api_format'] }}</a> &mdash; {{ endpoint['description'] }}</li>
+	  {% end %}
+	</ul>
+	<h2>HTTP status codes</h2>
+	<ul class="groups"%}
+		{% for group in groups %}
+		<li class="group">
+		  <h3>{{ group[2] }}</h3>
+		  <ul class="statuses">
+			{% for status in group[3] %}
+			<li class="status">
+			  <a href="/status/{{ status[0] }}">{{ status[0] }}</a> &mdash; {{ status[1] }} {% if status[2] %}<span class="extdescription">[ {{ status[2] }} ]</span>{% end %}</li>
+			{% end %}
+		  </ul>
+	  	</li>
+		{% end %}
+	</ul>
+	<h2>EXAMPLES</h2>
+	<p>
+	  <kbd>curl http://{{ handler.request.host }}/get | python -mjson.tool</kbd>
+	  <pre><code>
+{
+    "args": {},
+    "headers": {
+        "Accept": "*/*",
+        "Host": "{{ handler.request.host }}",
+        "User-Agent": "curl/7.19.7 (i486-pc-linux-gnu) libcurl/7.19.7 OpenSSL/0.9.8k zlib/1.2.3.3 libidn/1.15"
+    },
+    "url": " http://{{ handler.request.host }}/get"
+}
+</code></pre>
+	</p>
+	<p>
+	  <kbd> curl -X POST -F "name=value" http://{{ handler.request.host }}/post | python -mjson.tool</kbd>
+	  <pre><code>
+{
+    "args": {
+        "name": [
+            "value"
+        ]
+    },
+    "body": "------------------------------eb288eb3d3e4\r\nContent-Disposition: form-data; name=\"name\"\r\n\r\nvalue\r\n------------------------------eb288eb3d3e4--\r\n",
+    "files": {},
+    "headers": {
+        "Accept": "*/*",
+        "Content-Length": "144",
+        "Content-Type": "multipart/form-data; boundary=----------------------------eb288eb3d3e4",
+        "Expect": "100-continue",
+        "Host": "{{ handler.request.host }}",
+        "User-Agent": "curl/7.19.7 (i486-pc-linux-gnu) libcurl/7.19.7 OpenSSL/0.9.8k zlib/1.2.3.3 libidn/1.15"
+    },
+    "ip": "127.0.0.1",
+    "request_time": 0.04458308219909668,
+    "start_time": 1313996082.806412,
+    "url": "http://{{ handler.request.host }}/post"
+}
+	  </code></pre>
+	</p>
+	<p>
+	  <kbd>curl -X POST -F "test_files=@/tmp/testfile1.txt" -F "test_files=@/tmp/testfile2.txt"  http://{{ handler.request.host }}/post | python -mjson.tool</kbd>
+	  <pre><code>
+{
+    "args": {},
+    "files": {
+        "pictures": [
+            {
+                "body": ";klrjewfghjnq3rjehg;fqnr___j3bnr4lgfbv4riy5bguy4br5y\n",
+                "content_type": "text/plain",
+                "filename": "testfile1.txt"
+            },
+            {
+                "body": ";klrlfkejwknfqwdrkjnbkfgjb3erj\n",
+                "content_type": "text/plain",
+                "filename": "testfile2.txt"
+            }
+        ]
+    },
+    "body": "",
+    "headers": {
+        "Accept": "*/*",
+        "Content-Length": "428",
+        "Content-Type": "multipart/form-data; boundary=----------------------------af3ea881bfa9",
+        "Expect": "100-continue",
+        "Host": "{{ handler.request.host }}",
+        "User-Agent": "curl/7.19.7 (i486-pc-linux-gnu) libcurl/7.19.7 OpenSSL/0.9.8k zlib/1.2.3.3 libidn/1.15"
+    },
+    "ip": "127.0.0.1",
+    "request_time": 0.04804205894470215,
+    "start_time": 1313953495.331477,
+    "url": "http://{{ handler.request.host }}/post"
+}
+</code></pre>
+	</p>
+	<h2>SEE ALSO</h2>
+	<p>
+	  <a href="http://httpbin.org">httpbin.org</a>, <a href="http://postbin.org/">http://postbin.org/</a>, <a href="http://httpstat.us/">http://httpstat.us</a>, <a href="http://hurl.it">http://hurl.it/</a>
+	</p>
+	<h2>THANKS</h2>
+	To <a href="http://kennethreitz.com/pages/open-projects.html">Kenneth Reitz</a> who develop <a href="http://httpbin.org">httpbin.org</a>
+	<hr>
+	<p>Request time: {{ handler.request.request_time()*1000 }} ms</p>
+  </body>
+</html>

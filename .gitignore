@@ -20,4 +20,5 @@ debug.log
 pip-log.txt
 *.rdb
 *.log
+*.err
 *.db

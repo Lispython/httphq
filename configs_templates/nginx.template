@@ -1,0 +1,49 @@
+upstream  backend_{{ project_name }}  {
+    server   127.0.0.1:8889;
+}
+
+events {
+    worker_connections 1024;
+    use epoll;
+}
+
+server {
+  listen {{ server_ip }}:80;
+
+  server_name {{ site_name }} www.{{ site_name }};
+  set $project_root "{{ current }}";
+  root $project_root/root;
+
+  error_log /var/log/nginx/{{ site_name }}.error.log;
+  access_log /var/log/nginx/{{ site_name }}.access.log;
+
+
+  gzip             off;
+#  gzip_min_length  1000;
+#  gzip_proxied     expired no-cache no-store private auth;
+#gzip_types text/plain text/css text/xml
+#               application/x-javascript application/xml
+#               application/atom+xml text/javascript;
+
+  location ~* ^.+\.(ico|txt)$ {
+
+	root $project_root/root;
+  }
+
+  location ^~ /static/ {
+            root $project_root;
+            if ($query_string) {
+                expires max;
+            }
+        }
+
+  location / {
+    proxy_pass_header Server;
+    proxy_set_header Host $http_host;
+    proxy_redirect off;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Scheme $scheme;
+    proxy_pass http://backend_{{ project_name }};;
+  }
+}
+

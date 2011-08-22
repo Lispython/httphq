@@ -1,0 +1,19 @@
+server {
+  listen {{ server_ip }}:80;
+    
+  server_name {{ site_name }} www.{{ site_name }};
+  set $project_root "{{ current }}";
+  root $project_root/templates;
+  
+  error_log /var/log/nginx/{{ site_name }}.error.log;
+  access_log /var/log/nginx/{{ site_name }}.access.log;
+  
+  gzip on;
+    
+  location / {
+    autoindex off;
+	root $project_root/templates/;
+    index upgrade.html;
+  }
+  error_page 404 upgrade.html;
+}
