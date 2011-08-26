@@ -177,7 +177,7 @@ class IPHandler(CustomHandler):
 
     def get(self):
         output = {"ip": self.request.remote_ip}
-        hs = ("X-Real-Ip", "X-Forwarded-For", )
+        hs = ("X-Real-Ip", "X-Forwarded-For", "X-Real-IP")
         for h in hs:
             if self.request.headers.get(h):
                 output[h] = self.request.headers.get(h)
@@ -215,7 +215,9 @@ class METHODHandler(CustomHandler):
         data = {}
         data['args'] = dict([(k, v) for k, v in self.request.arguments.items()])
         data['headers'] = dict([(k, v) for k, v in self.request.headers.items()])
-        data['ip'] = self.request.remote_ip
+        data['ip'] = self.request.headers.get("X-Real-Ip",
+                                              self.request.headers.get("X-RealI-IP",
+                                                                       self.request("X-Forwarded-For", self.request.remote_ip)))
         data['url'] = self.request.full_url()
         data['request_time'] = self.request.request_time()
         data['start_time'] = self.request._start_time
