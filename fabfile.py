@@ -11,8 +11,6 @@ HTTP Request & Response service fabric commands file
 
 import os
 
-from __future__ import with_statement
-
 import yaml
 from fabric.api import *
 from fabric.contrib.console import confirm
