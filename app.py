@@ -66,12 +66,16 @@ class HTTPApplication(Application):
             (r"/head", HEADHandler, "HEAD method"),
             (r"/options", OPTIONSHandler, "OPTIONS method"),
             (r"/delete", DELETEHandler, "DELETE method"),
+            (r"/gzip", GZipHandler),
             (r"/user-agent", UserAgentHandler),
             (r"/headers", HeadersHandler),
             (r"/cookies", CookiesHandler, "Returns all user cookies"),
             (r"/cookies/set/(?P<name>.+)/(?P<value>.+)", CookiesHandler,
              "Setup given name and value on client"),
-            (r"/status/(?P<status_code>\d{3})", StatusHandler)]
+            (r"/status/(?P<status_code>\d{3})", StatusHandler),
+            (r"/redirect/(?P<num>\d{1,2})", RedirectHandler),
+            (r"/redirect/end", RedirectEndHandler),
+            (r"/basic-auth/(?P<username>.+)/(?P<password>.+)", BasicAuthHandler)]
 
         settings = dict(
             site_title=u"HTTP Request & Response service",
@@ -92,10 +96,13 @@ class CustomHandler(tornado.web.RequestHandler):
         super(CustomHandler, self).__init__(*args, **kwargs)
         self.set_header("Server", "LightBeer/0.568")
 
-    def json_response(self, data):
+    def json_response(self, data, finish=True):
         output_json = tornado.escape.json_encode(data)
-        self.set_header("Content-Type", "application/json")
-        self.finish(output_json)
+        # self.set_header("Content-Type", "application/json")
+        if finish is True:
+            self.finish(output_json)
+        else:
+            return output_json
 
 
 class HomeHandler(CustomHandler):
@@ -107,7 +114,10 @@ class HomeHandler(CustomHandler):
         replace_map = (
             ("(?P<status_code>\d{3})", "{status_code: int}", str(choice(responses.keys()))),
             ("(?P<name>.+)", "{name: str}", "test_name"),
-            ("(?P<value>.+)", "{value: str}", "test_value"))
+            ("(?P<value>.+)", "{value: str}", "test_value"),
+            ("(?P<num>\d{1,2})", "{redirects_num: int}", '4'),
+            ("(?P<username>.+)", "{username: str}", "test_username"),
+            ("(?P<password>.+)", "{password: str}", "test_password"))
 
         for point in self.application.dirty_handlers:
             default_url = point[0]
@@ -207,6 +217,61 @@ class CookiesHandler(CustomHandler):
         self.json_response(cookies)
 
 
+class RedirectHandler(CustomHandler):
+    """Test redirects
+    """
+
+    def get(self, num=1):
+        num = int(num)
+        if num == 1:
+            redirect = "/redirect/end"
+        else:
+            redirect = "/redirect/%s" % (num-1)
+        self.redirect(redirect)
+
+
+class RedirectEndHandler(CustomHandler):
+    """Redirects endpoint
+    """
+
+    def get(self):
+        self.json_response({"tagline": str(choice(taglines)),
+                            "code": 200,
+                            "finish": True})
+
+
+class BasicAuthHandler(CustomHandler):
+    """Basic Auth handler
+    """
+
+    def _request_auth(self):
+        self.set_header("WWW-Authenticate", 'Basic realm="Fake Realm"')
+        self.set_status(401)
+        self.finish()
+        return False
+
+    def get(self, username, password):
+        try:
+            from base64 import decodestring
+            auth = self.request.headers.get("Authorization")
+            if auth is None:
+                return self._request_auth()
+            else:
+                if not auth.startswith("Basic "):
+                    return self._request_auth()
+                auth_decoded = decodestring(auth[6:])
+                print(auth_decoded)
+                auth_username, auth_password = auth_decoded.split(":")
+                if auth_username == username and auth_password == password:
+                    self.json_response({"authenticated": True,
+                                        'password': password,
+                                        'username': username})
+                else:
+                    self._request_auth()
+        except Exception, e:
+            self._request_auth()
+
+
 class METHODHandler(CustomHandler):
     """Base class for methods handlers
     """
@@ -231,6 +296,39 @@ class METHODHandler(CustomHandler):
                                          body=x['body'] if len(x['body']) < 500 else x['body'][:500])
                                     for x in v]
         return data
+
+
+class GZipHandler(METHODHandler):
+    """Returns Gziped response
+    """
+
+    def get(self):
+        from gzip import GzipFile
+        try:
+            from cString import StringIO
+        except ImportError:
+            from StringIO import StringIO
+
+        data = self.get_data()
+        data['gzipped'] = True
+        json_response = self.json_response(data, finish=False)
+
+        tmp_buffer = StringIO()
+
+        gziped_buffer = GzipFile(
+            fileobj=tmp_buffer,
+            mode="wb",
+            compresslevel=7)
+        gziped_buffer.write(json_response)
+        gziped_buffer.close()
+
+        gzipped_data = tmp_buffer.getvalue()
+
+        self.set_header("Content-Encoding", 'gzip')
+        self.set_header("Content-Length", str(len(gzipped_data)))
+
+        tmp_buffer.close()
+        self.finish(gzipped_data)
 
 
 class GETHandler(METHODHandler):
