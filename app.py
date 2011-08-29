@@ -260,7 +260,6 @@ class BasicAuthHandler(CustomHandler):
                 if not auth.startswith("Basic "):
                     return self._request_auth()
                 auth_decoded = decodestring(auth[6:])
-                print(auth_decoded)
                 auth_username, auth_password = auth_decoded.split(":")
                 if auth_username == username and auth_password == password:
                     self.json_response({"authenticated": True,
@@ -377,6 +376,8 @@ class OPTIONSHandler(METHODHandler):
     """
 
     def options(self):
+        self.set_header("Allow", ", ".join(self.SUPPORTED_METHODS))
+        self.set_header("Public", ", ".join(self.SUPPORTED_METHODS))
         self.json_response(self.get_data())
 
 
