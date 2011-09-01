@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<title>{{ handler.settings['site_title'] }} | Human cURL for python</title>
+	<meta name="description" content="{{ handler.settings['site_title'] }}" />
+	<style type="text/css" media="all">
+	  p kbd:before {content: "[root@googleserver~]$\00A0\00A0";color: #555;}
+      pre, code {margin: .5em 0;}
+      pre {border: 2px solid #cbd1bd;}
+      pre, code, tt {font-size: 14px;font-family: Courier, "monospace";line-height: 1.5;background-color: #F5F5EA;color: #333; overflow: auto;  padding: 5px;}
+	  .status .extdescription {color:#9a9199;}
+	</style>
+  </head>
+  <body>
+	<!-- counters -->
+	<!-- Yandex.Metrika counter --><script type="text/javascript">var yaParams = {/*Здесь параметры визита*/};</script><div style="display:none;"><script type="text/javascript">(function(w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter9499702 = new Ya.Metrika({id:9499702, enableAll: true, trackHash:true,params:window.yaParams||{ }}); } catch(e) { } }); })(window, "yandex_metrika_callbacks");</script></div><script src="//mc.yandex.ru/metrika/watch.js" type="text/javascript" defer="defer"></script><noscript><div><img src="//mc.yandex.ru/watch/9499702" style="position:absolute; left:-9999px;" alt="" /></div></noscript><!-- /Yandex.Metrika counter -->
+	<!-- Google counter --><script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17631873-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+    <!-- / counters -->
+
+	<h1>Human cURL for python</h1>
+
+
+<div class="wikistyle">
+
+<p>Curl requests for Humans</p>
+<p>human_curl allow you to send  <strong>HEAD</strong>, <strong>GET</strong>, <strong>POST</strong>, <strong>PUT</strong>,
+<strong>OPTIONS</strong>, and <strong>DELETE</strong> HTTP requests.</p>
+
+<h2>Features</h2>
+<ul>
+<li>Custom HTTP headers</li>
+<li>Request data/params</li>
+<li>Multiple file uploading</li>
+<li>Cookies support (dict or CookieJar)</li>
+<li>Redirection history</li>
+<li>Proxy support (http, https, socks4/5)</li>
+<li>Custom interface for request!</li>
+<li>Auto decompression of GZipped content</li>
+<li>Unicode URL support</li>
+<li>Request timers and another info</li>
+<li>Certificate validation</li>
+<li>ipv6 support</li>
+</ul>
+
+<h2>Usage</h2>
+<p><strong>Simple get request</strong></p>
+<blockquote>
+<pre>&gt;&gt;&gt; import human_curl as requests # python-requests.org compatibile
+&gt;&gt;&gt; # import human_curl as hurl # unfortunately hulr.it keep this name :-)
+&gt;&gt;&gt; r = requests.get('http://h.wrttn.me/basic-auth/test_username/test_password', auth=('test_username', 'test_password'))
+&gt;&gt;&gt; r.status_code
+200
+&gt;&gt;&gt; r.content
+'{"username": "test_username", "password": "test_password", "authenticated": true}'
+</pre>
+</blockquote>
+<p><strong>Send files and variables</strong></p>
+<blockquote>
+<pre>&gt;&gt;&gt; import human_curl as requests
+&gt;&gt;&gt; r = requests.post('http://h.wrttn.me/post', files=(('file_1', '/tmp/testfile1.txt'),
+... ('file2', open('/tmp/testfile2.txt'))), data={'var_name': 'var_value'})
+    ...
+&gt;&gt;&gt; r.status_code
+201
+</pre>
+</blockquote>
+<p><strong>Redirects</strong></p>
+<blockquote>
+<pre>&gt;&gt;&gt; import human_curl as requests
+&gt;&gt;&gt; r = requests.get('http://h.wrttn.me/redirect/4', allow_redirects=True)
+&gt;&gt;&gt; r.status_code
+200
+&gt;&gt;&gt; print(r.history)
+    ['http://h.wrttn.me/redirect/3', 'http://h.wrttn.me/redirect/2', 'http://h.wrttn.me/redirect/1', 'http://h.wrttn.me/redirect/end']
+&gt;&gt;&gt; print(r.url)
+    http://h.wrttn.me/redirect/end
+</pre>
+</blockquote>
+
+
+<h2>TODO</h2>
+<ul>
+<li>async client</li>
+<li>curl command generation?</li>
+</ul>
+
+<h2>INSTALLATION</h2>
+<p>To use human_curl  use pip or easy_install:</p>
+<p>pip install human_curl</p>
+<p>or</p>
+<p>easy_install human_curl</p>
+
+
+<h2>CONTRIBUTE</h2>
+<p>Fork <a href="https://github.com/Lispython/human_curl/">https://github.com/Lispython/human_curl/</a> , create commit and pull request.</p>
+
+
+<h2>SEE ALSO</h2>
+<p>If you don't like cURL (why?), try to use <a href="http://python-requests.org">python-requests</a>.</p>
+
+
+ </div>
+
+	<p>Request time: {{ handler.request.request_time()*1000 }} ms</p>
+  </body>
+</html>

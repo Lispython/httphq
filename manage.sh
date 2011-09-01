@@ -28,6 +28,11 @@ restart()
     ./venv/bin/python manage.py start
 }
 
+debug(){
+    . ./venv/bin/activate
+    python app.py
+}
+
 case $1 in
     "minor_update") minor_update;;
 
@@ -38,6 +43,8 @@ case $1 in
     "start") start;;
 
 	"stop") stop;;
+
+	"debug") debug;;
 
     *) ./venv/bin/python manage.py $@;;
 

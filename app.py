@@ -59,6 +59,7 @@ class HTTPApplication(Application):
     def __init__(self):
         self.dirty_handlers = [
             (r"/", HomeHandler),
+            (r"/human_curl", HurlHandler),
             (r"/ip", IPHandler),
             (r"/get", GETHandler, "GET method"),
             (r"/post", POSTHandler, "POST method"),
@@ -145,6 +146,14 @@ class HomeHandler(CustomHandler):
                             if group[0] <= k < group[1]]])
 
         self.render("index.html", endpoints=endpoints, groups=groups)
+
+
+class HurlHandler(CustomHandler):
+    """Human cURL home page
+    """
+
+    def get(self):
+        self.render("human_curl.html")
 
 
 class StatusHandler(CustomHandler):
