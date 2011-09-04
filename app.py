@@ -11,7 +11,6 @@ Core of HTTP Request & Response service
 """
 
 import os
-import sys
 import tornado.ioloop
 import tornado
 from tornado.web import Application
@@ -19,7 +18,7 @@ from tornado.options import define, options
 from tornado import httpserver
 from tornado import autoreload
 from tornado.web import HTTPError
-from daemon import Daemon
+
 from httplib import responses
 from random import choice
 
@@ -402,48 +401,10 @@ class Middleware(object):
 application = HTTPApplication()
 
 
-def main():
+if __name__ == "__main__":
     tornado.options.parse_command_line()
     http_server = httpserver.HTTPServer(application)
     http_server.listen(options.port)
     ioloop = tornado.ioloop.IOLoop.instance()
     autoreload.start(io_loop=ioloop, check_time=100)
     ioloop.start()
-
-
-def production():
-    print("Production application manager")
-
-    tornado.options.parse_command_line()
-
-    class HTTPDaemon(Daemon):
-
-        def run(self):
-            http_server = httpserver.HTTPServer(application)
-            http_server.listen(options.port)
-            ioloop = tornado.ioloop.IOLoop.instance()
-            ioloop.start()
-
-    daemon = HTTPDaemon(rel('daemons', 'http-debugger.pid'),
-                        stdout=rel('daemons', 'http-debugger.log'),
-                        stderr=rel('daemons', 'http-debugger.err'))
-
-    if len(sys.argv) >= 2:
-        if 'start' == sys.argv[len(sys.argv)-1]:
-            daemon.start()
-        elif 'stop' == sys.argv[len(sys.argv)-1]:
-            daemon.stop()
-        elif 'restart' == sys.argv[len(sys.argv)-1]:
-            daemon.restart()
-        elif 'status' == sys.argv[len(sys.argv)-1]:
-            daemon.status()
-        else:
-            sys.exit(2)
-        sys.exit(0)
-    else:
-        print("usage: manage.py %s start | stop | restart | status" % sys.argv[1])
-        sys.exit(2)
-
-
-if __name__ == "__main__":
-    main()

@@ -30,7 +30,7 @@ restart()
 
 debug(){
     . ./venv/bin/activate
-    python app.py
+    python debug.py
 }
 
 case $1 in
