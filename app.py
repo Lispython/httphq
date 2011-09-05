@@ -255,7 +255,7 @@ class RedirectEndHandler(CustomHandler):
 
 
 class BasicAuthHandler(CustomHandler):
-    """Basic Auth handler
+    """HTTP Basic access
     """
 
     def _request_auth(self):
@@ -278,7 +278,7 @@ class BasicAuthHandler(CustomHandler):
                 try:
                     authorization_info = Authorization.from_string(auth)
                 except Exception, e:
-                    self._request_auth(qop)
+                    self._request_auth()
 
                 if not auth.startswith("Basic "):
                     return self._request_auth()
