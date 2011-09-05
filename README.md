@@ -22,7 +22,7 @@ Simple service for testing HTTP/HTTPS requests. All endpoint responses are JSON-
 - [/cookies/set/{name: str}/{value: str}](http://h.wrttn.me/cookies/set/test_name/test_value) — Setup given name and value on client
 - [/status/{status_code: int}](http://h.wrttn.me/status/403) — Returns given HTTP status code
 - [/basic-auth/{username: str}/{password: str}](http://h.wrttn.me/basic-auth/test_username/test_password) — Basic access authentication
-- [/digest-auth/{qop: auth | auth-int}/{username: str}/{password: str}](http://h.wrttn.me/digest-auth/test_username/test_password) — Digest access authentication
+- [/digest-auth/{qop: auth | auth-int}/{username: str}/{password: str}](http://h.wrttn.me/digest-auth/auth/test_username/test_password) — Digest access authentication
 
 </ul>
 ## HTTP status codes
