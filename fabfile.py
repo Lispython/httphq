@@ -134,6 +134,8 @@ def minor_update():
         update_configs()
         run('chown www-data:www-data -R %(current)s/' % env)
         _released_time()
+        put(_rel("server.key"), "%(current)s/server.key" % env)
+        put(_rel("server.crt"), "%(current)s/server.crt" % env)
         if confirm("Reload webservers?"):
             reload_webserver()
         else:

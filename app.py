@@ -264,7 +264,7 @@ class BasicAuthHandler(CustomHandler):
         WWW-Authenticate: Basic realm="Fake Realm"
         """
         self.set_header("WWW-Authenticate", WWWAuthentication('Basic',
-                                                              {'realm': 'Fake Realm'}))
+                                                              {'realm': 'Fake Realm'}).to_header())
         self.set_status(401)
         self.finish()
         return False
