@@ -1,5 +1,7 @@
-#!/bin/bash
-source ./venv/bin/activate
+#!/bin/sh
+
+. ./venv/bin/activate
+
 manage(){
 	./venv/bin/python manage.py $@
 }
@@ -28,9 +30,22 @@ restart()
     ./venv/bin/python manage.py start
 }
 
+tests()
+{
+    ./venv/bin/python tests.py
+}
+
 debug(){
     . ./venv/bin/activate
     python debug.py
+}
+
+build_certs(){
+    openssl genrsa -des3 -out server.key 1024
+    openssl rsa -in server.key -out server.key.insecure && mv server.key server.key.secure && mv server.key.insecure server.key
+    openssl req -new -key server.key -out server.csr
+    openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+
 }
 
 case $1 in
@@ -45,6 +60,10 @@ case $1 in
 	"stop") stop;;
 
 	"debug") debug;;
+
+	"tests") tests;;
+
+	"build_certs") build_certs;;
 
     *) ./venv/bin/python manage.py $@;;
 

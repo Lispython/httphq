@@ -11,6 +11,8 @@ Core of HTTP Request & Response service
 """
 
 import os
+import time
+from hashlib import md5
 import tornado.ioloop
 import tornado
 from tornado.web import Application
@@ -23,8 +25,10 @@ from httplib import responses
 from random import choice
 
 from taglines import taglines
+from utils import Authorization, WWWAuthentication, response, HA1, HA2, H
 
-define("port", default=8889, help="run on the given port", type=int)
+define("port", default=8889, help="run HTTP on the given port", type=int)
+define("ssl_port", default=8890, help="run HTTPS on the given port", type=int)
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 
@@ -75,7 +79,8 @@ class HTTPApplication(Application):
             (r"/status/(?P<status_code>\d{3})", StatusHandler),
             (r"/redirect/(?P<num>\d{1,2})", RedirectHandler),
             (r"/redirect/end", RedirectEndHandler),
-            (r"/basic-auth/(?P<username>.+)/(?P<password>.+)", BasicAuthHandler)]
+            (r"/basic-auth/(?P<username>.+)/(?P<password>.+)", BasicAuthHandler),
+            (r"/digest-auth/(?P<qop>.+)/(?P<username>.+)/(?P<password>.+)", DigestAuthHandler)]
 
         settings = dict(
             site_title=u"HTTP Request & Response service",
@@ -117,7 +122,8 @@ class HomeHandler(CustomHandler):
             ("(?P<value>.+)", "{value: str}", "test_value"),
             ("(?P<num>\d{1,2})", "{redirects_num: int}", '4'),
             ("(?P<username>.+)", "{username: str}", "test_username"),
-            ("(?P<password>.+)", "{password: str}", "test_password"))
+            ("(?P<password>.+)", "{password: str}", "test_password"),
+            ("(?P<qop>.+)", "{quality of protection: auth | auth-int}", "auth"))
 
         for point in self.application.dirty_handlers:
             default_url = point[0]
@@ -253,30 +259,122 @@ class BasicAuthHandler(CustomHandler):
     """
 
     def _request_auth(self):
-        self.set_header("WWW-Authenticate", 'Basic realm="Fake Realm"')
+        """Response no authentication header
+
+        WWW-Authenticate: Basic realm="Fake Realm"
+        """
+        self.set_header("WWW-Authenticate", WWWAuthentication('Basic',
+                                                              {'realm': 'Fake Realm'}))
         self.set_status(401)
         self.finish()
         return False
 
     def get(self, username, password):
         try:
-            from base64 import decodestring
             auth = self.request.headers.get("Authorization")
             if auth is None:
                 return self._request_auth()
             else:
+                try:
+                    authorization_info = Authorization.from_string(auth)
+                except Exception, e:
+                    self._request_auth(qop)
+
                 if not auth.startswith("Basic "):
                     return self._request_auth()
-                auth_decoded = decodestring(auth[6:])
-                auth_username, auth_password = auth_decoded.split(":")
-                if auth_username == username and auth_password == password:
+
+                ## Request authorization header
+                ## Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+
+                if authorization_info['username'] == username and \
+                       authorization_info['password'] == password:
                     self.json_response({"authenticated": True,
                                         'password': password,
-                                        'username': username})
+                                        'username': username,
+                                        'auth-type': 'basic'})
                 else:
                     self._request_auth()
         except Exception, e:
             self._request_auth()
+
+
+class DigestAuthHandler(BasicAuthHandler):
+    """HTTP Digest authentication
+
+    Digest authentication by RFC 2617
+    with support qop auth and auth-int
+    """
+
+    def _request_auth(self, qop=None):
+        """Build challenge header for request without Authorization header
+        """
+
+        # Generating server nonce, format propsed by RFC 2069 is
+        # H(client-IP:time-stamp:private-key).
+        nonce = H("%s:%d:%s" % (self.request.remote_ip,
+                                  time.time(),
+                                  os.urandom(10)))
+
+        # A string of data, specified by the server, which should be
+        # returned by the client unchanged.
+        opaque = H(os.urandom(10))
+        self.set_header("WWW-Authenticate",
+                        WWWAuthentication('Digest',
+                                          {'realm': "Fake Realm",
+                                           'nonce': nonce,
+                                           'qop': 'auth,auth-int,auth-ints' if qop is None else qop,
+                                           'opaque': opaque}).to_header())
+        self.set_status(401)
+        self.finish()
+        return False
+
+    def get(self, username, password, qop=None):
+        if qop not in ('auth', 'auth-int'):
+            qop = None
+        ## Response no authenticated header
+        ## WWW-Authenticate: Digest realm="testrealm@host.com",
+        ##                 qop="auth,auth-int",
+        ##                 nonce="dcd98b7102dd2f0e8b11d0f600bfb0c093",
+        ##                 opaque="5ccc069c403ebaf9f0171e9517f40e41"
+        ##
+        ## HTTP Digest auth request header
+        ## Authorization:Digest username="cebit;hans-joachim.ring@lvermgeo.rlp.de",
+        ##                 realm="mapbender_registry",
+        ##                 nonce="1c6437cc7cba6c72df4d50c46cff2f15",
+        ##                 uri="/http_auth/24150",
+        ##                 response="6bd4212340a437c7486184d362c6e946",
+        ##                 opaque="b28db91512b288b4a97030aa968487d5",
+        ##                 qop=auth,
+        ##                 nc=00000002,
+        ##                 cnonce="8a2782a5b869595d"
+
+        try:
+            auth = self.request.headers.get("Authorization")
+            if auth is None:
+                return self._request_auth(qop)
+            else:
+                try:
+                    authorization_info = Authorization.from_string(auth)
+                except Exception, e:
+                    self._request_auth(qop)
+                else:
+                    request_info = dict()
+                    request_info['uri'] = self.request.uri
+                    request_info['body'] = self.request.body
+                    request_info['method'] = self.request.method
+                    response_hash = response(authorization_info, password, request_info)
+                    if response_hash == authorization_info['response']:
+                        self.json_response({"authenticated": True,
+                                            'password': password,
+                                            'username': username,
+                                            'auth-type': 'digest'})
+                    else:
+                        self.set_status(403)
+                        self.finish()
+
+        except Exception, e:
+            print(e)
+            self._request_auth(qop)
 
 
 class METHODHandler(CustomHandler):
@@ -404,7 +502,12 @@ application = HTTPApplication()
 if __name__ == "__main__":
     tornado.options.parse_command_line()
     http_server = httpserver.HTTPServer(application)
+    https_server = httpserver.HTTPServer(application, ssl_options={
+        "certfile": rel("server.crt"),
+        "keyfile": rel("server.key"),
+        })
     http_server.listen(options.port)
+    https_server.listen(options.ssl_port)
     ioloop = tornado.ioloop.IOLoop.instance()
     autoreload.start(io_loop=ioloop, check_time=100)
     ioloop.start()
