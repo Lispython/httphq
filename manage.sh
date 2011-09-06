@@ -45,6 +45,8 @@ build_certs(){
     openssl rsa -in server.key -out server.key.insecure && mv server.key server.key.secure && mv server.key.insecure server.key
     openssl req -new -key server.key -out server.csr
     openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt
+    wget http://www.startssl.com/certs/sub.class1.server.ca.pem
+    cat server.crt sub.class1.server.ca.pem > ./server.pem
 
 }
 

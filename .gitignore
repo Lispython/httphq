@@ -25,3 +25,4 @@ pip-log.txt
 *.crt*
 *.key*
 *.csr*
+*.pem*

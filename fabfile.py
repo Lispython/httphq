@@ -131,11 +131,12 @@ def minor_update():
         run('rm -rf %(current)s/.git*' % env)
         with cd(env.current):
             run('mkdir -p %(configs)s' % env)
+        put(_rel("server.key"), "%(current)s/server.key" % env)
+        put(_rel("server.crt"), "%(current)s/server.crt" % env)
+        put(_rel("server.pem"), "%(current)s/server.pem" % env)
         update_configs()
         run('chown www-data:www-data -R %(current)s/' % env)
         _released_time()
-        put(_rel("server.key"), "%(current)s/server.key" % env)
-        put(_rel("server.crt"), "%(current)s/server.crt" % env)
         if confirm("Reload webservers?"):
             reload_webserver()
         else:

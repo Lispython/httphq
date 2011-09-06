@@ -32,11 +32,11 @@ if __name__ == "__main__":
             http_server = httpserver.HTTPServer(application)
             http_server.listen(options.port)
 
-            https_server = httpserver.HTTPServer(application, ssl_options={
-                "certfile": rel("server.crt"),
-                "keyfile": rel("server.key"),
-                })
-            https_server.listen(options.ssl_port)
+#            https_server = httpserver.HTTPServer(application, ssl_options={
+#                "certfile": rel("server.crt"),
+#                "keyfile": rel("server.key"),
+#                })
+#            https_server.listen(options.ssl_port)
 
             ioloop = tornado.ioloop.IOLoop.instance()
             ioloop.start()

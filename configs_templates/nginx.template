@@ -2,11 +2,6 @@ upstream  backend_{{ project_name }}  {
     server   127.0.0.1:8889;
 }
 
-#events {
-#    worker_connections 1024;
-#    use epoll;
-#}
-
 server {
   listen {{ server_ip }}:80;
 
@@ -19,11 +14,6 @@ server {
 
 
   gzip             off;
-#  gzip_min_length  1000;
-#  gzip_proxied     expired no-cache no-store private auth;
-#gzip_types text/plain text/css text/xml
-#               application/x-javascript application/xml
-#               application/atom+xml text/javascript;
 
   location ~* ^.+\.(ico|txt)$ {
 
@@ -48,16 +38,6 @@ server {
 }
 
 
-
-upstream  backend_{{ project_name }}_ssl  {
-    server   127.0.0.1:8890;
-}
-
-#events {
-#    worker_connections 1024;
-#    use epoll;
-#}
-
 server {
   listen {{ server_ip }}:443;
 
@@ -68,13 +48,18 @@ server {
   error_log /var/log/nginx/{{ site_name }}.error.log;
   access_log /var/log/nginx/{{ site_name }}.access.log;
 
+  ssl on;
+  ssl_certificate {{ current }}/server.pem;
+  ssl_certificate_key {{ current }}/server.key;
+
+  ssl_session_timeout 5m;
+
+  ssl_protocols SSLv2 SSLv3 TLSv1;
+  ssl_ciphers ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+  ssl_prefer_server_ciphers on;
+
 
   gzip             off;
-#  gzip_min_length  1000;
-#  gzip_proxied     expired no-cache no-store private auth;
-#gzip_types text/plain text/css text/xml
-#               application/x-javascript application/xml
-#               application/atom+xml text/javascript;
 
   location ~* ^.+\.(ico|txt)$ {
 
@@ -94,7 +79,7 @@ server {
     proxy_redirect off;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Scheme $scheme;
-    proxy_pass http://backend_{{ project_name }}_ssl;
+    proxy_pass http://backend_{{ project_name }};
   }
 }
 
