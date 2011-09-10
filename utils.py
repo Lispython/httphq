@@ -70,6 +70,9 @@ def parse_authorization_header(header):
             if not key in auth_map:
                 return
         return Authorization('digest', auth_map)
+    elif auth_type == 'oauth':
+        auth_map = parse_dict_header(auth_info)
+        return Authorization('OAuth', auth_map)
     else:
         raise ValueError("Unknown auth type %s" % auth_type)
 
@@ -98,7 +101,7 @@ class WWWAuthentication(dict):
     """WWWAuthentication header object
     """
 
-    AUTH_TYPES = ("Digest", "Basic")
+    AUTH_TYPES = ("Digest", "Basic", "OAuth")
 
     def __init__(self, auth_type='basic', data=None):
         if auth_type.lower() not in [t.lower() for t in self.AUTH_TYPES]:
@@ -126,7 +129,7 @@ class Authorization(dict):
     """Authorization header object
     """
 
-    AUTH_TYPES = ("Digest", "Basic")
+    AUTH_TYPES = ("Digest", "Basic", "OAuth")
 
     def __init__(self, auth_type='basic', data=None):
         if auth_type.lower() not in [t.lower() for t in self.AUTH_TYPES]:
