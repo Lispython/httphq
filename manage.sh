@@ -24,14 +24,12 @@ stop(){
     ./venv/bin/python manage.py stop
 }
 
-restart()
-{
+restart(){
     ./venv/bin/python manage.py stop
     ./venv/bin/python manage.py start
 }
 
-tests()
-{
+tests(){
     ./venv/bin/python tests.py
 }
 
@@ -65,8 +63,5 @@ case $1 in
 
 	"tests") tests;;
 
-	"build_certs") build_certs;;
-
     *) ./venv/bin/python manage.py $@;;
-
 esac
