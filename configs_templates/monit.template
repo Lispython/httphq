@@ -1,6 +1,6 @@
 check process http_debugger with pidfile {{ current }}/daemons/http-debugger.pid
-    start program = "{{ current }}/manage.sh start"
-    stop program  = "{{ current }}/manage.sh stop"
+    start program = "cd {{ current }} && {{ current }}/manage.sh start"
+    stop program  = "cd {{ current }} && {{ current }}/manage.sh stop"
     if cpu > 60% for 7 cycles then alert
     if cpu > 80% for 10 cycles then restart
     if totalmem > 200.0 MB for 5 cycles then restart

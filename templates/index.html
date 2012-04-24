@@ -3,6 +3,8 @@
   <head>
 	<title>{{ handler.settings['site_title'] }}</title>
 	<meta name="description" content="{{ handler.settings['site_title'] }}" />
+	<meta name="yandex-verification" content="7eadbc42f6cf6002" />
+	<meta name="google-site-verification" content="oJEgQl45jrGq8Rsb-LE4syo8SHVdxt1HXRl6snyGtrs" />
 	<style type="text/css" media="all">
 	  p kbd:before {content: "[root@googleserver~]$\00A0\00A0";color: #555;}
       pre, code {margin: .5em 0;}
@@ -32,7 +34,11 @@
 	<p>Simple service for testing HTTP/HTTPS requests. All endpoint responses are JSON-encoded exclude <a href="/status/200">/status/{status_code: int}</a>. It's useful for testing how your own scripts deal with varying responses and requests.</p>
 	<h2>AUTHOR</h2>
 	<p>
-	  <a href="http://obout.ru">Lispython</a>
+	  <a href="http://obout.ru">Lispython</a> (<a href="http://github.com/users/follow?target=Lispython">Follow me on github</a>
+	</p>
+	<h2>SOURCE</h2>
+	<p>
+	  You can get sources of h.wrttn.me on <a href="http://github.com/Lispython/httphq">http://github.com/Lispython/httphq</a>
 	</p>
 	<h2>ENDPOINTS</h2>
 	<ul class="endpoints">
@@ -130,6 +136,10 @@
     "url": "http://{{ handler.request.host }}/post"
 }
 </code></pre>
+	</p>
+	<h2>SOURCE</h2>
+	<p>
+	  You can get sources of h.wrttn.me on <a href="http://github.com/Lispython/httphq">http://github.com/Lispython/httphq</a>
 	</p>
 	<h2>SEE ALSO</h2>
     <p><a href="https://github.com/Lispython/human_curl">human cURL</a> &mdash; fast python library for resources requests.</p>
