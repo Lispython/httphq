@@ -108,7 +108,10 @@ class HTTPApplication(Application):
             (r"/oauth/(?P<version>.+)/request_token/(?P<consumer_key>.+)/(?P<consumer_secret>.+)/(?P<token_key>.+)/(?P<token_secret>.+)", OAuthRequestTokenHandler),
             (r"/oauth/(?P<version>.+)/authorize/(?P<pin>.+)", OAuthAuthorizeHandler),
             (r"/oauth/(?P<version>.+)/access_token/(?P<consumer_key>.+)/(?P<consumer_secret>.+)/(?P<tmp_token_key>.+)/(?P<tmp_token_secret>.+)/(?P<verifier>.+)/(?P<token_key>.+)/(?P<token_secret>.+)", OAuthAccessTokenHandler),
-            (r"/oauth/(?P<version>.+)/protected_resource/(?P<consumer_secret>.+)/(?P<token_secret>.+)", OAuthProtectedResourceHandler)]
+            (r"/oauth/(?P<version>.+)/protected_resource/(?P<consumer_secret>.+)/(?P<token_secret>.+)", OAuthProtectedResourceHandler),
+            (r"/timeouts/connection", ConnectionTimeoutHandler),
+            (r"/timeouts/response", ResponseTimeoutHandler),
+        ]
 
         settings = dict(
             site_title=u"HTTP Request & Response service",
@@ -822,6 +825,29 @@ class OPTIONSHandler(METHODHandler):
         self.set_header("Allow", ", ".join(self.SUPPORTED_METHODS))
         self.set_header("Public", ", ".join(self.SUPPORTED_METHODS))
         self.json_response(self.get_data())
+
+
+class ConnectionTimeoutHandler(METHODHandler):
+    """Endless connection
+    """
+    @tornado.web.asynchronous
+    def get(self, first=True):
+        pass
+
+
+class ResponseTimeoutHandler(METHODHandler):
+    """Endless response
+    """
+    @tornado.web.asynchronous
+    def get(self, first=True):
+        self.set_header('Content-Type', 'text/plain')
+        self.stream()
+
+    def stream(self):
+        now = time.time()
+        self.write('%s\n' % now)
+        self.flush()
+        tornado.ioloop.IOLoop.instance().add_timeout(now + .3, self.stream)
 
 
 class Middleware(object):
