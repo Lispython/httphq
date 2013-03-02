@@ -44,14 +44,14 @@ class Commandor(Commandor):
     """Arguments management utilities
     """
 
-    def run(self, options, args):
-        super(Commandor, self).run(options, args)
-        self.exit()
-        return True
+class Server(Command):
+    """httphq server"""
+    commandor = Commandor
+
 
 class Start(Command):
     """Start httphq server"""
-    commandor = Commandor
+    parent = Server
 
     options = [
         Option("-p", "--port",
@@ -108,18 +108,6 @@ class Start(Command):
         self.display("httphq is down")
 
 
-## class Status(Command):
-##     """Status httphq"""
-##     commandor = Commandor
-
-## class Stop(Command):
-##     """Stop httphq"""
-##     commandor = Commandor
-
-## class Restart(Command):
-##     """Restart httphq"""
-##     commandor = Commandor
-
 def main():
     """Manager entry point"""
 
@@ -129,45 +117,6 @@ def main():
 
     manager = Commandor(parser)
     manager.process()
-
-##     parse_command_line()
-
-##     class HTTPDaemon(Daemon):
-
-##         def run(self):
-
-##             http_server = httpserver.HTTPServer(application)
-##             http_server.listen(options.port)
-
-## #            https_server = httpserver.HTTPServer(application, ssl_options={
-## #                "certfile": rel("server.crt"),
-## #                "keyfile": rel("server.key"),
-## #                })
-## #            https_server.listen(options.ssl_port)
-
-##             ioloop = tornado.ioloop.IOLoop.instance()
-##             ioloop.start()
-
-##     daemon = HTTPDaemon(rel('daemons', 'http-debugger.pid'),
-##                         stdout=rel('daemons', 'http-debugger.log'),
-##                         stderr=rel('daemons', 'http-debugger.err'))
-
-##     if len(sys.argv) >= 2:
-##         if 'start' == sys.argv[len(sys.argv)-1]:
-##             daemon.start()
-##         elif 'stop' == sys.argv[len(sys.argv)-1]:
-##             daemon.stop()
-##         elif 'restart' == sys.argv[len(sys.argv)-1]:
-##             daemon.restart()
-##         elif 'status' == sys.argv[len(sys.argv)-1]:
-##             daemon.status()
-##         else:
-##             sys.exit(2)
-##         sys.exit(0)
-##     else:
-##         print("usage: %s start | stop | restart | status" % sys.argv[0])
-##         sys.exit(2)
-
 
 if __name__ == "__main__":
     main()
