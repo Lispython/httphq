@@ -1,3 +1,15 @@
+all: clean-pyc test
+
+test:
+	python setup.py nosetests --stop --tests tests.py
+
+travis:
+	python setup.py nosetests --tests tests.py
+
+release:
+	python setup.py sdist upload
+	python setup.py bdist_wininst upload
+
 clean-pyc:
 	find . -name '*.pyc' -exec rm -f {} +
 	find . -name '*.pyo' -exec rm -f {} +
@@ -14,11 +26,3 @@ remove-min:
 
 find-print:
 	grep -r --include=*.py --exclude-dir=venv --exclude=fabfile* --exclude=tests.py --exclude-dir=tests --exclude-dir=commands 'print' ./
-
-mongo-start:
-	rm -rf /var/lib/mongodb/mongod.lock
-	sudo mongod --fork -f /etc/mongodb.conf --auth --logpath /var/log/mongodb/mongodb.log --logappend
-
-
-redis-start:
-	sudo redis-server /etc/redis/redis.conf

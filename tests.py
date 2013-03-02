@@ -4,9 +4,9 @@
 
 import unittest
 from hashlib import md5
-from utils import (parse_dict_header, parse_authorization_header,
-                   parse_authenticate_header, Authorization, WWWAuthentication,
-                   H, HA1, HA2, response)
+from httphq.utils import (parse_dict_header, parse_authorization_header,
+                          parse_authenticate_header, Authorization, WWWAuthentication,
+                          H, HA1, HA2, response)
 
 class UtilsTestCase(unittest.TestCase):
     def setUp(self):

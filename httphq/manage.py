@@ -20,8 +20,8 @@ from daemon import Daemon
 from app import application, rel
 
 
-if __name__ == "__main__":
-    print("Production application manager")
+def main():
+    """Manager entry point"""
 
     parse_command_line()
 
@@ -60,3 +60,8 @@ if __name__ == "__main__":
     else:
         print("usage: manage.py %s start | stop | restart | status" % sys.argv[1])
         sys.exit(2)
+
+
+if __name__ == "__main__":
+    main()
+

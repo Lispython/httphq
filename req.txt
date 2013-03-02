@@ -1,3 +1,0 @@
-pyyaml
-https://github.com/downloads/facebook/tornado/tornado-2.0.tar.gz
--e git+git://github.com/Lispython/fenix-daemon.git#egg=daemon
