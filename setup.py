@@ -45,7 +45,8 @@ tests_require = [
 install_requires = [
     "tornado==2.4.1",
     "fenix-daemon",
-    "pyyaml"]
+    "pyyaml",
+    "commandor==0.1.1"]
 
 if not (is_py3 or (is_py2 and py_ver[1] >= 7)):
     install_requires.append("importlib==1.0.2")
