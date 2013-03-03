@@ -6,8 +6,8 @@ Simple service for testing HTTP/HTTPS requests.
 All endpoint responses are JSON-encoded exclude `/status/{status_code: int} <http://h.wrttn.me/status/200>`_.
 It's useful for testing how your own scripts deal with varying responses and requests.
 
-.. image:: https://secure.travis-ci.org/Lispython/httphq.png
-	   :target: https://secure.travis-ci.org/Lispython/httphq
+.. image:: https://travis-ci.org/Lispython/httphq.png
+	   :target: https://travis-ci.org/Lispython/httphq
 
 INSTALLATION
 ------------
