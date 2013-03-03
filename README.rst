@@ -58,6 +58,7 @@ HTTP status codes
 
 3xx Redirection
 ^^^^^^^^^^^^^^^
+
 - `300 <http://h.wrttn.me/status/300>`_ — Multiple Choices
 - `301 <http://h.wrttn.me/status/301>`_ — Moved Permanently [ Will also return this extra header: Location: http://http.obout.ru ]
 - `302 <http://h.wrttn.me/status/302>`_ — Found [ Will also return this extra header: Location: http://h.wrttn.me ]
@@ -90,6 +91,8 @@ HTTP status codes
 - `417 <http://h.wrttn.me/status/417>`_ — Expectation Failed
 
 5xx Server Error
+^^^^^^^^^^^^^^^^
+
 - `500 <http://h.wrttn.me/status/500>`_ — Internal Server Error
 - `501 <http://h.wrttn.me/status/501>`_ — Not Implemented
 - `502 <http://h.wrttn.me/status/502>`_ — Bad Gateway
