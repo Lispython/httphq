@@ -1,4 +1,3 @@
-
 HTTP Request & Response service
 ===============================
 
@@ -41,58 +40,62 @@ ENDPOINTS
 HTTP status codes
 =================
 
-- ### 1xx Informational
- - `100 <http://h.wrttn.me/status/100>`_ — Continue
- - `101 <http://h.wrttn.me/status/101>`_ — Switching Protocols
+1xx Informational
+^^^^^^^^^^^^^^^^^
+- `100 <http://h.wrttn.me/status/100>`_ — Continue
+- `101 <http://h.wrttn.me/status/101>`_ — Switching Protocols
 
-- ### 2xx Success
- - `200 <http://h.wrttn.me/status/200>`_ — OK
- - `201 <http://h.wrttn.me/status/201>`_ — Created
- - `202 <http://h.wrttn.me/status/202>`_ — Accepted
- - `203 <http://h.wrttn.me/status/203>`_ — Non-Authoritative Information
- - `204 <http://h.wrttn.me/status/204>`_ — No Content [ Won't return a response body ]
- - `205 <http://h.wrttn.me/status/205>`_ — Reset Content [ Won't return a response body ]
- - `206 <http://h.wrttn.me/status/206>`_ — Partial Content
+2xx Success
+^^^^^^^^^^^
 
-- ### 3xx Redirection
- - `300 <http://h.wrttn.me/status/300>`_ — Multiple Choices
- - `301 <http://h.wrttn.me/status/301>`_ — Moved Permanently [ Will also return this extra header: Location: http://http.obout.ru ]
- - `302 <http://h.wrttn.me/status/302>`_ — Found [ Will also return this extra header: Location: http://h.wrttn.me ]
- - `303 <http://h.wrttn.me/status/303>`_ — See Other [ Will also return this extra header: Location: http://h.wrttn.me ]
- - `304 <http://h.wrttn.me/status/304>`_ — Not Modified [ Won't return a response body ]
- - `305 <http://h.wrttn.me/status/305>`_ — Use Proxy [ Will also return this extra header: Location: http://h.wrttn.me ]
- - `306 <http://h.wrttn.me/status/306>`_ — (Unused)
- - `307 <http://h.wrttn.me/status/307>`_ — Temporary Redirect [ Will also return this extra header: Location: http://h.wrttn.me ]
+- `200 <http://h.wrttn.me/status/200>`_ — OK
+- `201 <http://h.wrttn.me/status/201>`_ — Created
+- `202 <http://h.wrttn.me/status/202>`_ — Accepted
+- `203 <http://h.wrttn.me/status/203>`_ — Non-Authoritative Information
+- `204 <http://h.wrttn.me/status/204>`_ — No Content [ Won't return a response body ]
+- `205 <http://h.wrttn.me/status/205>`_ — Reset Content [ Won't return a response body ]
+- `206 <http://h.wrttn.me/status/206>`_ — Partial Content
 
-- ### 4xx Client Error
+3xx Redirection
+^^^^^^^^^^^^^^^
+- `300 <http://h.wrttn.me/status/300>`_ — Multiple Choices
+- `301 <http://h.wrttn.me/status/301>`_ — Moved Permanently [ Will also return this extra header: Location: http://http.obout.ru ]
+- `302 <http://h.wrttn.me/status/302>`_ — Found [ Will also return this extra header: Location: http://h.wrttn.me ]
+- `303 <http://h.wrttn.me/status/303>`_ — See Other [ Will also return this extra header: Location: http://h.wrttn.me ]
+- `304 <http://h.wrttn.me/status/304>`_ — Not Modified [ Won't return a response body ]
+- `305 <http://h.wrttn.me/status/305>`_ — Use Proxy [ Will also return this extra header: Location: http://h.wrttn.me ]
+- `306 <http://h.wrttn.me/status/306>`_ — (Unused)
+- `307 <http://h.wrttn.me/status/307>`_ — Temporary Redirect [ Will also return this extra header: Location: http://h.wrttn.me ]
 
- - `400 <http://h.wrttn.me/status/400>`_ — Bad Request
- - `401 <http://h.wrttn.me/status/401>`_ — Unauthorized [ Will also return this extra header: WWW-Authenticate: Basic realm="Fake Realm" ]
- - `402 <http://h.wrttn.me/status/402>`_ — Payment Required
- - `403 <http://h.wrttn.me/status/403>`_ — Forbidden
- - `404 <http://h.wrttn.me/status/404>`_ — Not Found
- - `405 <http://h.wrttn.me/status/405>`_ — Method Not Allowed
- - `406 <http://h.wrttn.me/status/406>`_ — Not Acceptable
- - `407 <http://h.wrttn.me/status/407>`_ — Proxy Authentication Required [ Will also return this extra header: Proxy-Authenticate: Basic realm="Fake Realm" ]
- - `408 <http://h.wrttn.me/status/408>`_ — Request Timeout
- - `409 <http://h.wrttn.me/status/409>`_ — Conflict
- - `410 <http://h.wrttn.me/status/410>`_ — Gone
- - `411 <http://h.wrttn.me/status/411>`_ — Length Required
- - `412 <http://h.wrttn.me/status/412>`_ — Precondition Failed
- - `413 <http://h.wrttn.me/status/413>`_ — Request Entity Too Large
- - `414 <http://h.wrttn.me/status/414>`_ — Request-URI Too Long
- - `415 <http://h.wrttn.me/status/415>`_ — Unsupported Media Type
- - `416 <http://h.wrttn.me/status/416>`_ — Requested Range Not Satisfiable
- - `417 <http://h.wrttn.me/status/417>`_ — Expectation Failed
+4xx Client Error
+^^^^^^^^^^^^^^^^
 
-- ### 5xx Server Error
- - `500 <http://h.wrttn.me/status/500>`_ — Internal Server Error
- - `501 <http://h.wrttn.me/status/501>`_ — Not Implemented
- - `502 <http://h.wrttn.me/status/502>`_ — Bad Gateway
- - `503 <http://h.wrttn.me/status/503>`_ — Service Unavailable
- - `504 <http://h.wrttn.me/status/504>`_ — Gateway Timeout
- - `505 <http://h.wrttn.me/status/505>`_ — HTTP Version Not Supported
+- `400 <http://h.wrttn.me/status/400>`_ — Bad Request
+- `401 <http://h.wrttn.me/status/401>`_ — Unauthorized [ Will also return this extra header: WWW-Authenticate: Basic realm="Fake Realm" ]
+- `402 <http://h.wrttn.me/status/402>`_ — Payment Required
+- `403 <http://h.wrttn.me/status/403>`_ — Forbidden
+- `404 <http://h.wrttn.me/status/404>`_ — Not Found
+- `405 <http://h.wrttn.me/status/405>`_ — Method Not Allowed
+- `406 <http://h.wrttn.me/status/406>`_ — Not Acceptable
+- `407 <http://h.wrttn.me/status/407>`_ — Proxy Authentication Required [ Will also return this extra header: Proxy-Authenticate: Basic realm="Fake Realm" ]
+- `408 <http://h.wrttn.me/status/408>`_ — Request Timeout
+- `409 <http://h.wrttn.me/status/409>`_ — Conflict
+- `410 <http://h.wrttn.me/status/410>`_ — Gone
+- `411 <http://h.wrttn.me/status/411>`_ — Length Required
+- `412 <http://h.wrttn.me/status/412>`_ — Precondition Failed
+- `413 <http://h.wrttn.me/status/413>`_ — Request Entity Too Large
+- `414 <http://h.wrttn.me/status/414>`_ — Request-URI Too Long
+- `415 <http://h.wrttn.me/status/415>`_ — Unsupported Media Type
+- `416 <http://h.wrttn.me/status/416>`_ — Requested Range Not Satisfiable
+- `417 <http://h.wrttn.me/status/417>`_ — Expectation Failed
 
+5xx Server Error
+- `500 <http://h.wrttn.me/status/500>`_ — Internal Server Error
+- `501 <http://h.wrttn.me/status/501>`_ — Not Implemented
+- `502 <http://h.wrttn.me/status/502>`_ — Bad Gateway
+- `503 <http://h.wrttn.me/status/503>`_ — Service Unavailable
+- `504 <http://h.wrttn.me/status/504>`_ — Gateway Timeout
+- `505 <http://h.wrttn.me/status/505>`_ — HTTP Version Not Supported
 
 EXAMPLES
 --------
