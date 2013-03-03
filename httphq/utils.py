@@ -19,6 +19,7 @@ except ImportError:
     from urllib.request import parse_http_list
 
 from hashlib import md5
+from tornado.escape import utf8
 
 
 def parse_dict_header(value):
@@ -196,7 +197,7 @@ class Authorization(dict):
 # qop is a quality of protection
 
 def H(data):
-    return md5(data.encode("utf-8")).hexdigest()
+    return md5(utf8(data)).hexdigest()
 
 
 def HA1(realm, username, password):

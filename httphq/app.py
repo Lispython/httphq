@@ -6,23 +6,34 @@ http.app
 
 Core of HTTP Request & Response service
 
-:copyright: (c) 2011 by Alexandr Sokolovskiy (alex@obout.ru).
+:copyright: (c) 2011 by Alexandr Lispython (alex@obout.ru).
 :license: BSD, see LICENSE for more details.
+:github: http://github.com/Lispython/httphq
 """
 
 import os
+import sys
 import time
 import tornado.ioloop
 import tornado
 import hmac
 import binascii
-import urlparse
+try:
+    import urlparse
+except ImportError:
+    # Python3
+    from urllib import parse as urlparse
+
 try:
     from urlparse import parse_qs
     parse_qs # placate pyflakes
 except ImportError:
-    # fall back for Python 2.5
-    from cgi import parse_qs
+    try:
+        # Python3
+        from urllib.parse import parse_qs
+    except ImportError:
+        # fall back for Python 2.5
+        from cgi import parse_qs
 
 from tornado.web import Application
 from tornado.options import define, options
@@ -31,8 +42,6 @@ from tornado import autoreload
 from tornado.web import HTTPError
 from tornado.escape import utf8
 
-import urllib
-from httplib import responses
 from random import choice
 from string import ascii_letters, ascii_uppercase, ascii_lowercase
 
@@ -44,8 +53,10 @@ except ImportError:
     import sha
 
 
-from taglines import taglines
-from utils import Authorization, WWWAuthentication, response, HA1, HA2, H
+from httphq.taglines import taglines
+from httphq.utils import Authorization, WWWAuthentication, response, HA1, HA2, H
+from httphq.settings import responses
+from httphq.compat import unquote, urlencode, quote
 
 define("port", default=8889, help="run HTTP on the given port", type=int)
 define("ssl_port", default=8890, help="run HTTPS on the given port", type=int)
@@ -63,7 +74,7 @@ STATUSES_WITH_PROXY_AUTH = (407, )
 
 
 random_string = lambda x=10: ''.join([choice(ascii_letters + ascii_uppercase + ascii_lowercase)
-                                   for x in xrange(x)])
+                                   for x in range(x)])
 
 
 def get_status_extdescription(status):
@@ -111,7 +122,7 @@ class HTTPApplication(Application):
             (r"/oauth/(?P<version>.+)/protected_resource/(?P<consumer_secret>.+)/(?P<token_secret>.+)", OAuthProtectedResourceHandler)]
 
         settings = dict(
-            site_title=u"HTTP Request & Response service",
+            site_title="HTTP Request & Response service",
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
             static_path=os.path.join(os.path.dirname(__file__), "static"),
             xsrf_cookies=False,
@@ -166,8 +177,9 @@ class HomeHandler(CustomHandler):
 
     def get(self):
         endpoints = []
+
         replace_map = (
-            ("(?P<status_code>\d{3})", "{status_code: int}", str(choice(responses.keys()))),
+            ("(?P<status_code>\d{3})", "{status_code: int}", str(choice(list(responses.keys())))),
             ("(?P<name>.+)", "{name: str}", "test_name"),
             ("(?P<value>.+)", "{value: str}", "test_value"),
             ("(?P<num>\d{1,2})", "{redirects_num: int}", '4'),
@@ -338,7 +350,7 @@ class BasicAuthHandler(CustomHandler):
             else:
                 try:
                     authorization_info = Authorization.from_string(auth)
-                except Exception, e:
+                except Exception:
                     self._request_auth()
 
                 if not auth.startswith("Basic "):
@@ -355,7 +367,7 @@ class BasicAuthHandler(CustomHandler):
                                         'auth-type': 'basic'})
                 else:
                     self._request_auth()
-        except Exception, e:
+        except Exception:
             self._request_auth()
 
 
@@ -416,7 +428,7 @@ class DigestAuthHandler(BasicAuthHandler):
             else:
                 try:
                     authorization_info = Authorization.from_string(auth)
-                except Exception, e:
+                except Exception:
                     self._request_auth(qop)
                 else:
                     request_info = dict()
@@ -433,8 +445,8 @@ class DigestAuthHandler(BasicAuthHandler):
                         self.set_status(403)
                         self.finish()
 
-        except Exception, e:
-            print(e)
+        except Exception:
+            print(sys.exc_info()[1])
             self._request_auth(qop)
 
 
@@ -467,13 +479,13 @@ def normalize_parameters(url):
     query = urlparse.urlparse(url)[4]
     parameters = parse_qs(utf8(query), keep_blank_values=True)
     for k, v in parameters.iteritems():
-        parameters[k] = urllib.unquote(v[0])
+        parameters[k] = unquote(v[0])
     url_items = parameters.items()
     url_items = [(utf8(k), utf8(v)) for k, v in url_items if k != 'oauth_signature']
     items.extend(url_items)
 
     items.sort()
-    encoded_str = urllib.urlencode(items)
+    encoded_str = urlencode(items)
     # Encode signature parameters per Oauth Core 1.0 protocol
     # spec draft 7, section 3.6
     # (http://tools.ietf.org/html/draft-hammer-oauth-07#section-3.6)
@@ -484,7 +496,7 @@ def normalize_parameters(url):
 def url_escape(value):
     """Returns a valid URL-encoded version of the given value."""
     """Escape a URL including any /."""
-    return urllib.quote(value.encode('utf-8'), safe='~')
+    return quote(value.encode('utf-8'), safe='~')
 
 
 class SignatureMethod(object):
@@ -624,13 +636,13 @@ class OAuthBaseHandler(CustomHandler):
             for k in self.REQUIRED_FIELDS:
                 if k not in authorization.keys():
                     self._request_auth()
-                    return
+                    self.finish()
         else:
             d = {}
             for k in self.REQUIRED_FIELDS:
                 if k not in self.request.arguments.keys():
                     self._request_auth()
-                    return
+                    self.finish()
                 d[k] = self.request.arguments.get(k)[0]
             authorization = Authorization('OAuth', d)
 
@@ -667,9 +679,12 @@ class OAuthRequestTokenHandler(OAuthBaseHandler):
             raise HTTPError(400)
 
         authorization = self.get_authorization()
+        if not authorization:
+            raise HTTPError(400)
+
         self._check_timestamp(authorization.get('oauth_timestamp'))
         if self._check_signature(authorization, consumer_secret):
-            self.finish(urllib.urlencode({
+            self.finish(urlencode({
                 "oauth_token": token_key,
                 "oauth_token_secret": token_secret}))
 
@@ -684,7 +699,7 @@ class OAuthAuthorizeHandler(OAuthBaseHandler):
     def get(self, version, pin):
         try:
             oauth_token = self.request.arguments.get('oauth_token')[0]
-        except IndexError, e:
+        except (IndexError, TypeError):
             self.set_status(500)
             self.finish("oauth token required")
         else:
@@ -705,7 +720,7 @@ class OAuthAccessTokenHandler(OAuthBaseHandler):
 
         if self._check_signature(authorization, str(consumer_secret), str(tmp_token_secret)):
             # token and token_secret for protected sources
-            self.finish(urllib.urlencode({
+            self.finish(urlencode({
                 "oauth_token": token_key,
                 "oauth_token_secret": token_secret}))
 
