@@ -23,7 +23,7 @@ is_py2 = (py_ver[0] == 2)
 is_py3 = (py_ver[0] == 3)
 
 if is_py2:
-    from urliib import unquote, urlencode, quote
+    from urllib import unquote, urlencode, quote
     try:
         from cStringIO import StringIO
         BytesIO = StringIO
