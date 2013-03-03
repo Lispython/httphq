@@ -41,10 +41,10 @@ ENDPOINTS
 
 
 HTTP status codes
-=================
+-----------------
 
 1xx Informational
-^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~
 
 - `100 <http://h.wrttn.me/status/100>`_ — Continue
 - `101 <http://h.wrttn.me/status/101>`_ — Switching Protocols
