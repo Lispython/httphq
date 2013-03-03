@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding:  utf-8 -*-
 """
-gottwall
+httphq
 ~~~~~~~~
 
-Realtime statistics aggregation platform
+HTTP Request & Response service
 
 :copyright: (c) 2011 - 2013 by Alexandr Lispython (alex@obout.ru).
 :license: BSD, see LICENSE for more details.
