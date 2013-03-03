@@ -19,7 +19,7 @@ __maintainer__ = "Alexandr Lispython"
 try:
     __version__ = __import__('pkg_resources') \
         .get_distribution('httphq').version
-except Exception, e:
+except Exception:
     __version__ = 'unknown'
 
 if __version__ == 'unknown':

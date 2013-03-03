@@ -3,7 +3,6 @@
 
 
 import unittest
-from hashlib import md5
 from httphq.utils import (parse_dict_header, parse_authorization_header,
                           parse_authenticate_header, Authorization, WWWAuthentication,
                           H, HA1, HA2, response)
@@ -38,19 +37,19 @@ class UtilsTestCase(unittest.TestCase):
         parsed_authorization_header = parse_authorization_header(self.authorization_value)
 
         self.assertTrue(isinstance(parsed_authorization_header, Authorization))
-        self.assertEquals(parsed_authorization_header._auth_type.lower(), 'digest')
-        for k, v in control.iteritems():
-            self.assertEquals(parsed_authorization_header[k], v)
+        self.assertEqual(parsed_authorization_header._auth_type.lower(), 'digest')
+        for k, v in control.items():
+            self.assertEqual(parsed_authorization_header[k], v)
 
         parsed_authorization_header2 = Authorization.from_string(self.authorization_value)
 
         self.assertTrue(isinstance(parsed_authorization_header2, Authorization))
-        self.assertEquals(parsed_authorization_header2._auth_type.lower(), 'digest')
-        for k, v in control.iteritems():
-            self.assertEquals(parsed_authorization_header2[k], v)
+        self.assertEqual(parsed_authorization_header2._auth_type.lower(), 'digest')
+        for k, v in control.items():
+            self.assertEqual(parsed_authorization_header2[k], v)
 
         compiled_header_value = parsed_authorization_header.to_header()
-        for k, v in control.iteritems():
+        for k, v in control.items():
             self.assertTrue('%s="%s"' % (k, v) in compiled_header_value)
 
 
@@ -62,19 +61,19 @@ class UtilsTestCase(unittest.TestCase):
         parsed_authenticate = parse_authenticate_header(self.www_authenticate_value)
 
         self.assertTrue(isinstance(parsed_authenticate, WWWAuthentication))
-        self.assertEquals(parsed_authenticate._auth_type.lower(), 'digest')
-        for k, v in control.iteritems():
-            self.assertEquals(parsed_authenticate[k], v)
+        self.assertEqual(parsed_authenticate._auth_type.lower(), 'digest')
+        for k, v in control.items():
+            self.assertEqual(parsed_authenticate[k], v)
 
         parsed_authenticate2 = WWWAuthentication.from_string(self.www_authenticate_value)
 
         self.assertTrue(isinstance(parsed_authenticate2, WWWAuthentication))
-        self.assertEquals(parsed_authenticate2._auth_type.lower(), 'digest')
-        for k, v in control.iteritems():
-            self.assertEquals(parsed_authenticate2[k], v)
+        self.assertEqual(parsed_authenticate2._auth_type.lower(), 'digest')
+        for k, v in control.items():
+            self.assertEqual(parsed_authenticate2[k], v)
 
         compiled_header_value = parsed_authenticate.to_header()
-        for k, v in control.iteritems():
+        for k, v in control.items():
             self.assertTrue('%s="%s"' % (k, v) in compiled_header_value)
 
 
@@ -94,7 +93,7 @@ class UtilsTestCase(unittest.TestCase):
             ('opaque', "5ccc069c403ebaf9f0171e9517f40e41")))
 
         for k, v in parse_dict_header(value).items():
-            self.assertEquals(v, control[k])
+            self.assertEqual(v, control[k])
 
     def test_Hx(self):
         cr = {'username': 'test_username',
@@ -110,16 +109,16 @@ class UtilsTestCase(unittest.TestCase):
         request = {'method': 'GET',
                    'uri': '/dir/index.html',
                    'body': 'request body'}
-        self.assertEquals(HA1(cr['realm'], cr['username'], cr['password']),
+        self.assertEqual(HA1(cr['realm'], cr['username'], cr['password']),
                           H("%s:%s:%s" % (cr['username'], cr['realm'], cr['password'])))
 
         # test qop == auth
         cr['qop'] = 'auth'
-        self.assertEquals(HA2(cr, request), H("%s:%s" % (request['method'], request['uri'])))
+        self.assertEqual(HA2(cr, request), H("%s:%s" % (request['method'], request['uri'])))
 
         # test qop == auth-int
         cr['qop'] = 'auth-int'
-        self.assertEquals(HA2(cr, request), H("%s:%s:%s" % (request['method'], request['uri'], H(request['body']))))
+        self.assertEqual(HA2(cr, request), H("%s:%s:%s" % (request['method'], request['uri'], H(request['body']))))
 
         # test qop == 'bad-auth'
         cr['qop'] = 'bad-auth'
@@ -128,13 +127,13 @@ class UtilsTestCase(unittest.TestCase):
 
         # test qop == None
         cr['qop'] = None
-        self.assertEquals(response(cr, cr['password'], request),
+        self.assertEqual(response(cr, cr['password'], request),
                           H(":".join([HA1(cr['realm'], cr['username'], cr['password']),
                                       cr.get('nonce'), HA2(cr, request)])))
 
         # test qop == auth
         cr['qop'] = 'auth'
-        self.assertEquals(response(cr, cr['password'], request),
+        self.assertEqual(response(cr, cr['password'], request),
                           H(":".join([HA1(cr['realm'], cr['username'], cr['password']),
                                       cr.get('nonce'),
                                       cr.get('nc'),

@@ -7,10 +7,17 @@ httphq.utils
 
 Helpers for handlers
 
-:copyright: (c) 2011 by Alexandr Sokolovskiy (alex@obout.ru).
+:copyright: (c) 2011 - 2013 by Alexandr Lispython (alex@obout.ru).
 :license: BSD, see LICENSE for more details.
+:github: http://github.com/Lispython/httphq
 """
-from urllib2 import parse_http_list
+import sys
+
+try:
+    from urllib2 import parse_http_list
+except ImportError:
+    from urllib.request import parse_http_list
+
 from hashlib import md5
 
 
@@ -47,14 +54,14 @@ def parse_authorization_header(header):
     try:
         auth_type, auth_info = header.split(None, 1) # separate auth type and values
         auth_type = auth_type.lower()
-    except ValueError, e:
-        print(e)
+    except ValueError:
+        print(sys.exc_info()[0])
         return
 
     if auth_type == 'basic':
         try:
             username, password = auth_info.decode('base64').split(':', 1)
-        except Exception, e:
+        except Exception:
             return
         return Authorization('basic', {'username': username,
                                        'password': password})
@@ -91,8 +98,8 @@ def parse_authenticate_header(header):
     try:
         auth_type, auth_info = header.split(None, 1)
         auth_type = auth_type.lower()
-    except ValueError, e:
-        print(e)
+    except ValueError:
+        print(sys.exc_info()[0])
         return
     return WWWAuthentication(auth_type, parse_dict_header(auth_info))
 
@@ -122,7 +129,7 @@ class WWWAuthentication(dict):
         """
         d = dict(self)
         return "%s %s" % (self._auth_type.title(), ", ".join("%s=\"%s\"" % (k, v)
-                                                             for k, v in d.iteritems()))
+                                                             for k, v in d.items()))
 
 
 class Authorization(dict):
@@ -150,7 +157,7 @@ class Authorization(dict):
         """
         d = dict(self)
         return "%s %s" % (self._auth_type.title(), ", ".join("%s=\"%s\"" % (k, v)
-                                                             for k, v in d.iteritems()))
+                                                             for k, v in d.items()))
 
 
     # Digest auth properties http://tools.ietf.org/html/rfc2069#page-4
@@ -189,7 +196,7 @@ class Authorization(dict):
 # qop is a quality of protection
 
 def H(data):
-    return md5(data).hexdigest()
+    return md5(data.encode("utf-8")).hexdigest()
 
 
 def HA1(realm, username, password):
