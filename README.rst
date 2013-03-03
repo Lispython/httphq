@@ -37,7 +37,6 @@ ENDPOINTS
 - `/basic-auth/{username: str}/{password: str} <http://h.wrttn.me/basic-auth/test_username/test_password>`_ — Basic access authentication
 - `/digest-auth/{qop: auth | auth-int}/{username: str}/{password: str} <http://h.wrttn.me/digest-auth/auth/test_username/test_password>`_ — Digest access authentication
 
-</ul>
 
 HTTP status codes
 =================
