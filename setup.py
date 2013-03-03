@@ -23,7 +23,7 @@ except Exception, e:
     readme_content = __doc__
 
 
-VERSION = "0.0.1"
+VERSION = "0.0.3"
 
 
 def run_tests():
@@ -44,7 +44,7 @@ tests_require = [
 
 install_requires = [
     "tornado==2.4.1",
-    "commandor==0.1.1"]
+    "commandor==0.1.4"]
 
 if not (is_py3 or (is_py2 and py_ver[1] >= 7)):
     install_requires.append("importlib==1.0.2")

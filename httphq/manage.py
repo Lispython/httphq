@@ -9,8 +9,10 @@ Production management script of HTTP Request & Response service
 
 :copyright: (c) 2011 - 2013 by Alexandr Lispython (alex@obout.ru).
 :license: BSD, see LICENSE for more details.
+:github: http://github.com/Lispython/httphq
 """
-import sys
+
+import time
 import signal
 import logging as logging_module
 from logging import StreamHandler
@@ -43,6 +45,8 @@ def configure_logging(logging):
 class Commandor(Commandor):
     """Arguments management utilities
     """
+    def run(self, options, args):
+        return True
 
 class Server(Command):
     """httphq server"""
@@ -56,7 +60,7 @@ class Start(Command):
     options = [
         Option("-p", "--port",
                metavar=int,
-               default=8890,
+               default=8891,
                help="Port to run http server"),
         Option("-r", "--reload",
                action="store_true",
@@ -73,6 +77,7 @@ class Start(Command):
                help="Log level")]
 
     def run(self, port, reload, host, logging, **kwargs):
+
         self.display("Configure logging")
         configure_logging(logging)
 
@@ -80,7 +85,7 @@ class Start(Command):
         self.application = application
 
         self.http_server = httpserver.HTTPServer(application)
-        self.http_server.listen(host, port)
+        self.http_server.listen(port, host)
 
         if reload:
             self.display("Autoreload enabled")
@@ -105,6 +110,9 @@ class Start(Command):
         """Stop server and add callback to stop i/o loop"""
         self.display("Shutting down service")
         self.http_server.stop()
+        io_loop = tornado.ioloop.IOLoop.instance()
+        io_loop.add_timeout(time.time() + 2, io_loop.stop)
+
         self.display("httphq is down")
 
 
