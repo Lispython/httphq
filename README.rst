@@ -23,7 +23,7 @@ ENDPOINTS
 
 - `/ <http://h.wrttn.me/>`_ —  Show home page
 - `/ip <http://h.wrttn.me/ip>`_ — Returns client IP and proxies
-- `/get <http://h.wrttn.me/get>`_</a> — GET method
+- `/get <http://h.wrttn.me/get>`_  — GET method
 - `/post <http://h.wrttn.me/post>`_ — POST method
 - `/put <http://h.wrttn.me/put>`_ — PUT method
 - `/head <http://h.wrttn.me/head>`_ — HEAD method
