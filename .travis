@@ -14,4 +14,4 @@ install:
     - pip install nose
 
 script:
-    - make travis
+    - python setup.py test
