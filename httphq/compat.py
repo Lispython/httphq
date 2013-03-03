@@ -24,6 +24,13 @@ is_py3 = (py_ver[0] == 3)
 
 if is_py2:
     from urliib import unquote, urlencode, quote
+    try:
+        from cStringIO import StringIO
+        BytesIO = StringIO
+    except ImportError:
+        from StringIO import StringIO
+        BytesIO = StringIO
 else:
     # Python3
     from urllib.parse import urlencode, unquote, quote
+    from io import StringIO, BytesIO

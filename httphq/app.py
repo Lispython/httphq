@@ -56,7 +56,7 @@ except ImportError:
 from httphq.taglines import taglines
 from httphq.utils import Authorization, WWWAuthentication, response, HA1, HA2, H
 from httphq.settings import responses
-from httphq.compat import unquote, urlencode, quote
+from httphq.compat import unquote, urlencode, quote, BytesIO
 
 define("port", default=8889, help="run HTTP on the given port", type=int)
 define("ssl_port", default=8890, help="run HTTPS on the given port", type=int)
@@ -141,7 +141,7 @@ class CustomHandler(tornado.web.RequestHandler):
         self.set_header("Server", "LightBeer/0.568")
 
     def json_response(self, data, finish=True):
-        output_json = tornado.escape.json_encode(data)
+        output_json = utf8(tornado.escape.json_encode(data))
         # self.set_header("Content-Type", "application/json")
         if finish is True:
             self.finish(output_json)
@@ -762,21 +762,18 @@ class GZipHandler(METHODHandler):
 
     def get(self):
         from gzip import GzipFile
-        try:
-            from cString import StringIO
-        except ImportError:
-            from StringIO import StringIO
 
         data = self.get_data()
         data['gzipped'] = True
         json_response = self.json_response(data, finish=False)
 
-        tmp_buffer = StringIO()
+        tmp_buffer = BytesIO()
 
         gziped_buffer = GzipFile(
             fileobj=tmp_buffer,
             mode="wb",
             compresslevel=7)
+
         gziped_buffer.write(json_response)
         gziped_buffer.close()
 
