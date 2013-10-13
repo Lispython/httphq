@@ -23,10 +23,10 @@ except Exception:
     __version__ = 'unknown'
 
 if __version__ == 'unknown':
-    __version_info__ = (0, 0, 0)
+    __version_info__ = (0, 0, 6)
 else:
     __version_info__ = __version__.split('.')
-__build__ = 0x000004
+__build__ = 0x000006
 
 
 def get_version():
