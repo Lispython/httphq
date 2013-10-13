@@ -98,6 +98,8 @@ class HTTPApplication(Application):
         self.dirty_handlers = [
             (r"/", HomeHandler),
             (r"/human_curl", HurlHandler),
+            (r"/robots.txt", RobotsResourceHandler),
+            (r"/humans.txt", HumansResourceHandler),
             (r"/ip", IPHandler),
             (r"/get", GETHandler, "GET method"),
             (r"/post", POSTHandler, "POST method"),
@@ -204,6 +206,7 @@ class HomeHandler(CustomHandler):
             for r in replace_map:
                 default_url = default_url.replace(r[0], r[2])
                 api_format = api_format.replace(r[0], r[1])
+
             description = point[2] if len(point) >= 3 else point[1].__doc__.strip()
             endpoint = {"default_url": default_url,
                         "api_format": api_format,
@@ -232,6 +235,22 @@ class HurlHandler(CustomHandler):
 
     def get(self):
         self.render("human_curl.html")
+
+
+class RobotsResourceHandler(CustomHandler):
+    """Robots.txt file
+    """
+
+    def get(self):
+        self.set_header("Content-Type", "text/plain")
+        self.render("robots.txt")
+
+class HumansResourceHandler(CustomHandler):
+    """Humans.txt file
+    """
+    def get(self):
+        self.set_header("Content-Type", "text/plain")
+        self.render("humans.txt")
 
 
 class StatusHandler(CustomHandler):
@@ -852,12 +871,17 @@ application = HTTPApplication()
 if __name__ == "__main__":
     tornado.options.parse_command_line()
     http_server = httpserver.HTTPServer(application)
-    https_server = httpserver.HTTPServer(application, ssl_options={
-        "certfile": rel("server.crt"),
-        "keyfile": rel("server.key"),
-        })
+
+    certfile = rel("server.crt")
+    keyfile = rel("server.key")
+
+    if os.path.exists(certfile) and os.path.exists(keyfile):
+        https_server = httpserver.HTTPServer(application, ssl_options={
+            "certfile": certfile,
+            "keyfile": keyfile})
+        https_server.listen(options.ssl_port)
+
     http_server.listen(options.port)
-    https_server.listen(options.ssl_port)
     ioloop = tornado.ioloop.IOLoop.instance()
     autoreload.start(io_loop=ioloop, check_time=100)
     ioloop.start()
