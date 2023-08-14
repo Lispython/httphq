@@ -44,7 +44,7 @@ tests_require = [
     'mock==1.0.1']
 
 install_requires = [
-    "tornado==2.4.1",
+    "tornado==6.3.3",
     "commandor==0.1.5"]
 
 if not (is_py3 or (is_py2 and py_ver[1] >= 7)):
